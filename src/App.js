@@ -1,22 +1,29 @@
 // src/App.js
 import React, { useState } from 'react';
-import * as d3 from 'd3';
 import { MerkleTree } from './components/MerkleTree';
+import FileUpload from './components/FileUpload';
+import LeavesList from './components/LeavesList';
+import ProofDisplay from './components/ProofDisplay';
+import VeriForm from './components/VeriForm';
+import RootDisplay from './components/RootDisplay';
+import { verifName } from './utils/verifName';
+import './App.css';
 
 function App() {
   const [leaves, setLeaves] = useState([]);
-  const [csvContent, setCsvContent] = useState(''); // State to store CSV content
+  const [csvContent, setCsvContent] = useState('');
   const [merkleTree, setMerkleTree] = useState(null);
   const [root, setRoot] = useState('');
   const [proof, setProof] = useState([]);
-  
+  const [verificationResult, setVerificationResult] = useState(null);
+
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     const text = await file.text();
-    const data = text.split(',').map(item => item.trim()); // Split by commas and trim any extra spaces
+    const data = text.split(',').map(item => item.trim());
     setLeaves(data);
-    setCsvContent(text); // Store the raw CSV content
-  };  
+    setCsvContent(text);
+  };
 
   const handleGenerateTree = async () => {
     const tree = new MerkleTree(leaves);
@@ -32,10 +39,18 @@ function App() {
     }
   };
 
+  const handleVerification = async (nameToCheck, proofInput) => {
+    if (!nameToCheck || !proofInput) return;
+
+    const proofArray = proofInput.split(',').map(item => item.trim());
+    const isNameInTree = await verifName(nameToCheck, proofArray, root);
+    setVerificationResult(isNameInTree ? 'Name is in the Merkle Tree' : 'Name is NOT in the Merkle Tree');
+  };
+
   return (
     <div className="App">
       <h1>Merkle Tree</h1>
-      <input type="file" accept=".csv" onChange={handleFileUpload} />
+      <FileUpload onFileUpload={handleFileUpload} />
       {csvContent && (
         <div>
           <h3>CSV Content:</h3>
@@ -45,17 +60,11 @@ function App() {
       <button onClick={handleGenerateTree} disabled={leaves.length === 0}>
         Generate Merkle Tree
       </button>
-      <h2>Root: {root}</h2>
-      <h3>Leaves</h3>
-      <ul>
-        {leaves.map((leaf, index) => (
-          <li key={index}>
-            {leaf} <button onClick={() => handleGenerateProof(leaf)}>Generate Proof</button>
-          </li>
-        ))}
-      </ul>
-      <h3>Proof</h3>
-      <pre>{JSON.stringify(proof, null, 2)}</pre>
+      <RootDisplay root={root} />
+      <LeavesList leaves={leaves} onGenerateProof={handleGenerateProof} />
+      <ProofDisplay proof={proof} />
+      <VeriForm onVerify={handleVerification} />
+      {verificationResult && <p>{verificationResult}</p>}
     </div>
   );
 }

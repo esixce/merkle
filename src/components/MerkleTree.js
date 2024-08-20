@@ -1,5 +1,5 @@
 // src/MerkleTree.js
-import { sha256 } from './sha256';
+import { sha256 } from '../utils/sha256';
 
 export class MerkleTree {
   constructor(leaves) {
