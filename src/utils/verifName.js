@@ -7,7 +7,7 @@ export async function verifName(name, proof, root) {
   console.log(`Initial hash of name ("${name}"): ${hash}`);
 
   for (let i = 0; i < proof.length; i++) {
-    const proofElement = proof[i];
+    const proofElement = proof[i].trim();
     const combined = hash < proofElement ? hash + proofElement : proofElement + hash;
     hash = await sha256(combined);
 

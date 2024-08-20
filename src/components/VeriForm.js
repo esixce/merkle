@@ -3,21 +3,14 @@ import React, { useState } from 'react';
 
 const VeriForm = ({ onVerify }) => {
   const [nameToCheck, setNameToCheck] = useState('');
-  const [proofInputs, setProofInputs] = useState(['']);
-
-  const handleAddProofInput = () => {
-    setProofInputs([...proofInputs, '']);
-  };
-
-  const handleProofChange = (index, value) => {
-    const updatedProofs = [...proofInputs];
-    updatedProofs[index] = value;
-    setProofInputs(updatedProofs);
-  };
+  const [proofInput, setProofInput] = useState('');
+  const [merkleRoot, setMerkleRoot] = useState('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onVerify(nameToCheck, proofInputs.join(','));
+    // Split the comma-separated proof input into an array and pass it to the onVerify function
+    const proofArray = proofInput.split(',').map(item => item.trim());
+    onVerify(nameToCheck, proofArray, merkleRoot);
   };
 
   return (
@@ -34,21 +27,25 @@ const VeriForm = ({ onVerify }) => {
       </div>
       <div>
         <label>
-          Proof Steps:
+          Proof Steps (comma-separated):
+          <input
+            type="text"
+            value={proofInput}
+            onChange={(e) => setProofInput(e.target.value)}
+            placeholder="Enter proof steps, separated by commas"
+          />
         </label>
-        {proofInputs.map((input, index) => (
-          <div key={index}>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => handleProofChange(index, e.target.value)}
-              placeholder={`Proof Step ${index + 1}`}
-            />
-          </div>
-        ))}
-        <button type="button" onClick={handleAddProofInput}>
-          Add More
-        </button>
+      </div>
+      <div>
+        <label>
+          Merkle Root:
+          <input
+            type="text"
+            value={merkleRoot}
+            onChange={(e) => setMerkleRoot(e.target.value)}
+            placeholder="Enter the Merkle root"
+          />
+        </label>
       </div>
       <button type="submit">Verify</button>
     </form>
