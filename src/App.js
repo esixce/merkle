@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import './App.css'; // Import the styles
 import { MerkleTree } from './components/MerkleTree';
 import FileUpload from './components/FileUpload';
-import LeavesList from './components/LeavesList';
-import ProofDisplay from './components/ProofDisplay';
+// import LeavesList from './components/LeavesList';
+// import ProofDisplay from './components/ProofDisplay';
 import VeriForm from './components/VeriForm';
 import RootDisplay from './components/RootDisplay';
 import { verifName } from './utils/verifName';
@@ -15,7 +15,7 @@ function App() {
   const [csvContent, setCsvContent] = useState('');
   const [merkleTree, setMerkleTree] = useState(null);
   const [root, setRoot] = useState('');
-  const [proof, setProof] = useState([]);
+  // const [proof, setProof] = useState([]);
   const [verificationResult, setVerificationResult] = useState(null);
 
   const handleFileUpload = async (event) => {
@@ -33,12 +33,12 @@ function App() {
     setRoot(tree.getRoot());
   };
 
-  const handleGenerateProof = async (leaf) => {
-    if (merkleTree) {
-      const proof = await merkleTree.getProof(leaf);
-      setProof(proof);
-    }
-  };
+  // const handleGenerateProof = async (leaf) => {
+  //   if (merkleTree) {
+  //     const proof = await merkleTree.getProof(leaf);
+  //     setProof(proof);
+  //   }
+  // };
 
   const handleVerification = async (nameToCheck, proofArray, merkleRoot) => {
     const isNameInTree = await verifName(nameToCheck, proofArray, merkleRoot);

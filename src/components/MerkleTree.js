@@ -25,7 +25,6 @@ export class MerkleTree {
   }
 
   async getProof(leaf) {
-    const leafHash = await sha256(leaf.trim().toLowerCase());
     const index = this.leaves.findIndex(l => l.trim().toLowerCase() === leaf.trim().toLowerCase());
 
     if (index === -1) {
