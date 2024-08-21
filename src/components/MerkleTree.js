@@ -20,7 +20,6 @@ export class MerkleTree {
         let right = currentLevel[i + 1] || left;
 
         if (left > right) {
-          console.log('left > right');
           [left, right] = [right, left];
         }
 
@@ -45,7 +44,7 @@ export class MerkleTree {
   }
   
   generateProof(leafIndex) {
-    let proof = [leafIndex+1];
+    let proof = [];
     let currentLayerIndex = leafIndex;
   
     // Traverse the tree from the leaf to the root
@@ -58,6 +57,9 @@ export class MerkleTree {
   
       if (siblingIndex < layer.length) {
         proof.push(layer[siblingIndex]);
+      } else if (siblingIndex >= layer.length && currentLayerIndex < layer.length) {
+        // If it's the last element and odd, push the same element (duplicate)
+        proof.push(layer[currentLayerIndex]);
       }
   
       // Move to the next layer up (parent node)
