@@ -4,7 +4,7 @@ import React from 'react';
 const RootDisplay = ({ root }) => {
   return (
     <div>
-      <h2>Root: {root}</h2>
+      <h3>Root: {root}</h3>
     </div>
   );
 };
