@@ -44,10 +44,12 @@ function App() {
     }
   };
 
-  const handleVerification = async (nameToCheck, proofArray, merkleRoot) => {
-    const isNameInTree = await verifName(nameToCheck, proofArray, merkleRoot);
+  const handleVerification = async (nameToCheck, proofArray, merkleRoot, index) => {
+    console.log('index', index); // Debugging output to check the index
+    const isNameInTree = await verifName(nameToCheck, proofArray, merkleRoot, index);
     setVerificationResult(isNameInTree ? 'Name is in the Merkle Tree' : 'Name is NOT in the Merkle Tree');
   };
+  
 
   // const handleExportCSV = async () => {
   //   if (merkleTree && root) {

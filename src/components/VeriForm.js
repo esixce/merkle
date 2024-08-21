@@ -1,15 +1,20 @@
-// src/components/VerificationForm.js
 import React, { useState } from 'react';
 
 const VeriForm = ({ onVerify }) => {
   const [nameToCheck, setNameToCheck] = useState('');
   const [proofInput, setProofInput] = useState('');
   const [merkleRoot, setMerkleRoot] = useState('');
+  const [indexToCheck, setIndexToCheck] = useState(''); // Initialize index state
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const proofArray = proofInput.split(',').map(item => item.trim());
-    onVerify(nameToCheck, proofArray, merkleRoot);
+    const index = parseInt(indexToCheck, 10); // Convert index to integer
+    if (isNaN(index)) {
+      alert('Please enter a valid index number.');
+      return;
+    }
+    onVerify(nameToCheck, proofArray, merkleRoot, index); // Pass index to onVerify
   };
 
   return (
@@ -21,6 +26,17 @@ const VeriForm = ({ onVerify }) => {
             type="text"
             value={nameToCheck}
             onChange={(e) => setNameToCheck(e.target.value)}
+          />
+        </label>
+      </div>
+      <div>
+        <label>
+          Index:
+          <input
+            type="number"
+            value={indexToCheck}
+            onChange={(e) => setIndexToCheck(e.target.value)}
+            placeholder="Enter the index of the name in the Merkle tree"
           />
         </label>
       </div>
