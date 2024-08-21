@@ -3,19 +3,21 @@ import React, { useState } from 'react';
 import './App.css'; // Import the styles
 import { MerkleTree } from './components/MerkleTree';
 import FileUpload from './components/FileUpload';
-// import LeavesList from './components/LeavesList';
-// import ProofDisplay from './components/ProofDisplay';
+import LeavesList from './components/LeavesList';
+import ProofDisplay from './components/ProofDisplay';
 import VeriForm from './components/VeriForm';
 import RootDisplay from './components/RootDisplay';
 import { verifName } from './utils/verifName';
 import { exportToCSV } from './utils/csvExport'; // Import the CSV export utility
+import MerkleVisual from './components/MerkleVisual';
+import MerkleTreeDiagram from './components/MerkleTreeDiagram';
 
 function App() {
   const [leaves, setLeaves] = useState([]);
   const [csvContent, setCsvContent] = useState('');
   const [merkleTree, setMerkleTree] = useState(null);
   const [root, setRoot] = useState('');
-  // const [proof, setProof] = useState([]);
+  const [proof, setProof] = useState([]);
   const [verificationResult, setVerificationResult] = useState(null);
 
   const handleFileUpload = async (event) => {
@@ -26,19 +28,23 @@ function App() {
     setCsvContent(text);
   };
 
+  const [treeSteps, setTreeSteps] = useState([]); // State to hold the tree steps
+
   const handleGenerateTree = async () => {
     const tree = new MerkleTree(leaves);
     await tree.buildTree(leaves);
     setMerkleTree(tree);
     setRoot(tree.getRoot());
+    setTreeSteps(tree.getSteps()); // Set the steps for display
   };
+  
 
-  // const handleGenerateProof = async (leaf) => {
-  //   if (merkleTree) {
-  //     const proof = await merkleTree.getProof(leaf);
-  //     setProof(proof);
-  //   }
-  // };
+  const handleGenerateProof = async (leaf) => {
+    if (merkleTree) {
+      const proof = await merkleTree.getProof(leaf);
+      setProof(proof);
+    }
+  };
 
   const handleVerification = async (nameToCheck, proofArray, merkleRoot) => {
     const isNameInTree = await verifName(nameToCheck, proofArray, merkleRoot);
@@ -78,12 +84,33 @@ function App() {
       </button>
       <RootDisplay root={root} />
 
+      <h3>Merkle Tree Steps</h3>
+      {treeSteps.length > 0 && (
+        <div>
+          {treeSteps.map((level, index) => (
+            <div key={index}>
+              <h4>Level {index + 1}</h4>
+              <ul>
+                {level.map((hash, idx) => (
+                  <li key={idx}>{hash}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <LeavesList leaves={leaves} onGenerateProof={handleGenerateProof} />
+      <ProofDisplay proof={proof} />
+
       <button onClick={handleExportCSV} disabled={!merkleTree}>
         Export All Proofs to CSV
       </button>
 
-      {/* <LeavesList leaves={leaves} onGenerateProof={handleGenerateProof} /> */}
-      {/* <ProofDisplay proof={proof} /> */}
+      {merkleTree && <MerkleVisual leaves={leaves} merkleTree={merkleTree} />} {/* Render the diagram */}
+
+      {merkleTree && <MerkleTreeDiagram leaves={leaves} merkleTree={merkleTree} />} {/* Render the diagram */}
+
 
     </div>
   );

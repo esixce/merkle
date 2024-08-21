@@ -2,7 +2,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
-const MerkleVisual = ({ leaves, merkleTree }) => {
+const MerkleTreeDiagram = ({ leaves, merkleTree }) => {
   const svgRef = useRef();
 
   useEffect(() => {
@@ -20,12 +20,12 @@ const MerkleVisual = ({ leaves, merkleTree }) => {
     const height = +svg.attr('height');
     const layerHeight = height / (Math.log2(leaves.length) + 2);
 
-    // Function to draw a node
-    const drawNode = (x, y, text) => {
+    // Function to draw a node with text
+    const drawNode = (x, y, hashText) => {
       svg.append('circle')
         .attr('cx', x)
         .attr('cy', y)
-        .attr('r', 20)
+        .attr('r', 30)
         .style('fill', '#007bff');
 
       svg.append('text')
@@ -33,8 +33,8 @@ const MerkleVisual = ({ leaves, merkleTree }) => {
         .attr('y', y + 5)
         .attr('text-anchor', 'middle')
         .style('fill', '#fff')
-        .style('font-size', '10px')
-        .text(text);
+        .style('font-size', '8px')
+        .text(hashText);
     };
 
     // Function to draw a line between nodes
@@ -48,9 +48,9 @@ const MerkleVisual = ({ leaves, merkleTree }) => {
         .attr('stroke-width', 2);
     };
 
-    // Start drawing from the leaves
+    // Start with the leaves
     let currentLayer = leaves.map((leaf, index) => ({
-      hash: leaf,
+      hash: merkleTree.tree[index],
       x: width / (leaves.length + 1) * (index + 1),
       y: height - layerHeight
     }));
@@ -58,12 +58,14 @@ const MerkleVisual = ({ leaves, merkleTree }) => {
     currentLayer.forEach(node => drawNode(node.x, node.y, node.hash));
 
     // Traverse up the tree
+    let indexOffset = 0;
     while (currentLayer.length > 1) {
       const nextLayer = [];
       for (let i = 0; i < currentLayer.length; i += 2) {
         const left = currentLayer[i];
         const right = currentLayer[i + 1] || left;
-        const combinedHash = `${left.hash}+${right.hash}`;
+        const parentIndex = indexOffset + currentLayer.length + Math.floor(i / 2);
+        const combinedHash = merkleTree.tree[parentIndex];
 
         const nextNode = {
           hash: combinedHash,
@@ -78,6 +80,7 @@ const MerkleVisual = ({ leaves, merkleTree }) => {
         drawNode(nextNode.x, nextNode.y, combinedHash);
       }
       currentLayer = nextLayer;
+      indexOffset += currentLayer.length;
     }
 
     // Draw the root
@@ -89,4 +92,4 @@ const MerkleVisual = ({ leaves, merkleTree }) => {
   return <svg ref={svgRef}></svg>;
 };
 
-export default MerkleVisual;
+export default MerkleTreeDiagram;

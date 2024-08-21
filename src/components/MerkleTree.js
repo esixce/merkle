@@ -5,23 +5,46 @@ export class MerkleTree {
   constructor(leaves) {
     this.leaves = leaves;
     this.tree = [];
+    this.steps = [];
   }
 
+  // async buildTree(leaves) {
+  //   this.tree = await Promise.all(leaves.map(leaf => sha256(leaf)));
+  //   while (this.tree.length > 1) {
+  //     const layer = [];
+  //     for (let i = 0; i < this.tree.length; i += 2) {
+  //       const left = this.tree[i];
+  //       const right = this.tree[i + 1] || left;
+  //       layer.push(await sha256(left + right));
+  //     }
+  //     this.tree = layer;
+  //   }
+  // }
+
   async buildTree(leaves) {
-    this.tree = await Promise.all(leaves.map(leaf => sha256(leaf)));
-    while (this.tree.length > 1) {
-      const layer = [];
-      for (let i = 0; i < this.tree.length; i += 2) {
-        const left = this.tree[i];
-        const right = this.tree[i + 1] || left;
-        layer.push(await sha256(left + right));
+    let currentLevel = await Promise.all(leaves.map(leaf => sha256(leaf)));
+    this.steps.push([...currentLevel]); // Capture initial hashed leaves
+    
+    while (currentLevel.length > 1) {
+      const nextLevel = [];
+      for (let i = 0; i < currentLevel.length; i += 2) {
+        const left = currentLevel[i];
+        const right = currentLevel[i + 1] || left;
+        const combinedHash = await sha256(left + right);
+        nextLevel.push(combinedHash);
       }
-      this.tree = layer;
+      this.steps.push([...nextLevel]); // Capture each level of the tree
+      currentLevel = nextLevel;
     }
-  }
+    this.tree = currentLevel; // The root is the last remaining hash
+  }  
 
   getRoot() {
     return this.tree[0];
+  }
+
+  getSteps() {
+    return this.steps;
   }
 
   async getProof(leaf) {
