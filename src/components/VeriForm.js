@@ -8,7 +8,6 @@ const VeriForm = ({ onVerify }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Split the comma-separated proof input into an array and pass it to the onVerify function
     const proofArray = proofInput.split(',').map(item => item.trim());
     onVerify(nameToCheck, proofArray, merkleRoot);
   };

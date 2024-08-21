@@ -1,21 +1,29 @@
 // src/utils/verifName.js
 import { sha256 } from './sha256';
 
-export async function verifName(name, proof, root) {
-  let hash = await sha256(name.trim().toLowerCase());
+export async function verifName(leaf, proofArray, merkleRoot) {
+  let hash = await sha256(leaf);
 
-  console.log(`Initial hash of name ("${name}"): ${hash}`);
-
-  for (let i = 0; i < proof.length; i++) {
-    const proofElement = proof[i].trim();
-    const combined = hash < proofElement ? hash + proofElement : proofElement + hash;
-    hash = await sha256(combined);
-
-    console.log(`After step ${i + 1}, combined hash: ${combined}, resulting hash: ${hash}`);
+  for (let siblingHash of proofArray) {
+    if (hash < siblingHash) {
+      hash = await sha256(hash + siblingHash);
+    } else {
+      hash = await sha256(siblingHash + hash);
+    }
   }
 
-  console.log(`Final computed hash: ${hash}`);
-  console.log(`Expected root hash: ${root}`);
-
-  return hash === root;
+  return hash === merkleRoot;
 }
+
+
+// Example usage:
+const root = '4fcfb77eaf9a279c4ff2d20171c1626c2823a82a2cec1ddc0c23dbcb48822e80';
+const proof = [
+  "ca15ebc05a3c5c1348753b209c4452c54022dbe565d9943b11c795e3af9eb0b0",
+  "9855c9f31157005f7f2ff1c7ca91a628f9ed881e2d784cb9cd85f3d5d04a6489"
+];
+const word = "Portal";
+
+verifName(word, proof, root).then(isValid => {
+  console.log(isValid ? 'Valid proof' : 'Invalid proof');
+});

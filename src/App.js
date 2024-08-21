@@ -10,7 +10,7 @@ import RootDisplay from './components/RootDisplay';
 import { verifName } from './utils/verifName';
 import { exportToCSV } from './utils/csvExport'; // Import the CSV export utility
 import MerkleVisual from './components/MerkleVisual';
-import MerkleTreeDiagram from './components/MerkleTreeDiagram';
+// import MerkleTreeDiagram from './components/MerkleTreeDiagram';
 
 function App() {
   const [leaves, setLeaves] = useState([]);
@@ -19,6 +19,7 @@ function App() {
   const [root, setRoot] = useState('');
   const [proof, setProof] = useState([]);
   const [verificationResult, setVerificationResult] = useState(null);
+  const [treeSteps, setTreeSteps] = useState([]); // State to hold the tree steps
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -28,7 +29,6 @@ function App() {
     setCsvContent(text);
   };
 
-  const [treeSteps, setTreeSteps] = useState([]); // State to hold the tree steps
 
   const handleGenerateTree = async () => {
     const tree = new MerkleTree(leaves);
@@ -109,7 +109,7 @@ function App() {
 
       {merkleTree && <MerkleVisual leaves={leaves} merkleTree={merkleTree} />} {/* Render the diagram */}
 
-      {merkleTree && <MerkleTreeDiagram leaves={leaves} merkleTree={merkleTree} />} {/* Render the diagram */}
+      {/* {merkleTree && <MerkleTreeDiagram leaves={leaves} merkleTree={merkleTree} />} Render the diagram */}
 
 
     </div>
