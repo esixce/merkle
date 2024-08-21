@@ -8,8 +8,8 @@ import ProofDisplay from './components/ProofDisplay';
 import VeriForm from './components/VeriForm';
 import RootDisplay from './components/RootDisplay';
 import { verifName } from './utils/verifName';
-import { exportToCSV } from './utils/csvExport'; // Import the CSV export utility
-import MerkleVisual from './components/MerkleVisual';
+// import { exportToCSV } from './utils/csvExport'; // Import the CSV export utility
+// import MerkleVisual from './components/MerkleVisual';
 // import MerkleTreeDiagram from './components/MerkleTreeDiagram';
 
 function App() {
@@ -29,7 +29,6 @@ function App() {
     setCsvContent(text);
   };
 
-
   const handleGenerateTree = async () => {
     const tree = new MerkleTree(leaves);
     await tree.buildTree(leaves);
@@ -38,7 +37,6 @@ function App() {
     setTreeSteps(tree.getSteps()); // Set the steps for display
   };
   
-
   const handleGenerateProof = async (leaf) => {
     if (merkleTree) {
       const proof = await merkleTree.getProof(leaf);
@@ -51,19 +49,19 @@ function App() {
     setVerificationResult(isNameInTree ? 'Name is in the Merkle Tree' : 'Name is NOT in the Merkle Tree');
   };
 
-  const handleExportCSV = async () => {
-    if (merkleTree && root) {
-      const namesAndProofs = await Promise.all(
-        leaves.map(async (name) => {
-          const proof = await merkleTree.getProof(name);
-          return { name, proof };
-        })
-      );
-      exportToCSV(root, namesAndProofs);
-    } else {
-      alert('No Merkle Tree available to export.');
-    }
-  };
+  // const handleExportCSV = async () => {
+  //   if (merkleTree && root) {
+  //     const namesAndProofs = await Promise.all(
+  //       leaves.map(async (name) => {
+  //         const proof = await merkleTree.getProof(name);
+  //         return { name, proof };
+  //       })
+  //     );
+  //     exportToCSV(root, namesAndProofs);
+  //   } else {
+  //     alert('No Merkle Tree available to export.');
+  //   }
+  // };
 
   return (
     <div className="App">
@@ -103,11 +101,11 @@ function App() {
       <LeavesList leaves={leaves} onGenerateProof={handleGenerateProof} />
       <ProofDisplay proof={proof} />
 
-      <button onClick={handleExportCSV} disabled={!merkleTree}>
+      {/* <button onClick={handleExportCSV} disabled={!merkleTree}>
         Export All Proofs to CSV
-      </button>
+      </button> */}
 
-      {merkleTree && <MerkleVisual leaves={leaves} merkleTree={merkleTree} />} {/* Render the diagram */}
+      {/* {merkleTree && <MerkleVisual leaves={leaves} merkleTree={merkleTree} />} Render the diagram */}
 
       {/* {merkleTree && <MerkleTreeDiagram leaves={leaves} merkleTree={merkleTree} />} Render the diagram */}
 
